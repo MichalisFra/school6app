@@ -1,5 +1,6 @@
 package gr.aueb.cf.school6app.dao;
 
+import gr.aueb.cf.school6app.core.RoleType;
 import gr.aueb.cf.school6app.dao.exceptions.UserDAOException;
 import gr.aueb.cf.school6app.model.User;
 import gr.aueb.cf.school6app.security.SecUtil;
@@ -14,7 +15,7 @@ public class UserDAOImpl implements IUserDAO{
 
     @Override
     public User insert(User user) throws UserDAOException {
-        String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
+        String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
 
         try (Connection connection = DBUtil.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -22,9 +23,11 @@ public class UserDAOImpl implements IUserDAO{
             // Extract model info
             String username = user.getUsername();
             String password = user.getPassword();
+            RoleType role = user.getRoleType();
 
             ps.setString(1, username);
             ps.setString(2, SecUtil.hashPassword(password));
+            ps.setString(3, role.name());
 
             ps.executeUpdate();
             // logging
@@ -54,7 +57,10 @@ public class UserDAOImpl implements IUserDAO{
             rs = ps.executeQuery();
 
             if (rs.next()) {
-                user = new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
+                user = new User(rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        RoleType.valueOf(rs.getString("role")));
 
             }
             // logging
@@ -84,7 +90,7 @@ public class UserDAOImpl implements IUserDAO{
             rs = ps.executeQuery();
 
             if (rs.next()) {
-                user = new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
+                user = new User(rs.getInt("id"), rs.getString("username"), rs.getString("password"), RoleType.valueOf(rs.getString("role")));
 
             } else {
                 return false;

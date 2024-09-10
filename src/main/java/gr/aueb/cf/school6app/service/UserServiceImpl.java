@@ -1,5 +1,6 @@
 package gr.aueb.cf.school6app.service;
 
+import gr.aueb.cf.school6app.core.RoleType;
 import gr.aueb.cf.school6app.dao.IUserDAO;
 import gr.aueb.cf.school6app.dao.exceptions.UserDAOException;
 import gr.aueb.cf.school6app.dto.InsertUserDTO;
@@ -73,6 +74,6 @@ public class UserServiceImpl implements IUserService {
     }
 
     private User mapToUser(InsertUserDTO dto) {
-        return new User(null, dto.getUsername(), dto.getPassword());
+        return new User(null, dto.getUsername(), dto.getPassword(), RoleType.valueOf(dto.getRole()));
     }
 }
